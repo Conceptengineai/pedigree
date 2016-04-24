@@ -10,6 +10,15 @@
     // -->
 </SCRIPT>
 
+<{if $showwelcome}>
+<table width="100%" class="outer" style="margin-bottom: 10px;">
+    <tr>
+        <td class="even"><{$welcome}></td>
+    </tr>
+</table>
+<{/if}>
+
+
 <table width="100%">
     <tr>
         <td valign="top" width="50%">

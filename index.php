@@ -90,4 +90,6 @@ function index_main()
     $xoopsTpl->assign("sname", _MA_PEDIGREE_SEARCHNAME);
     $xoopsTpl->assign("snameex", strtr(_MA_PEDIGREE_SEARCHNAME_EX, array('[animalTypes]' => $moduleConfig['animalTypes'])));
     $xoopsTpl->assign("usersearch", (isset($usersearch) ? $usersearch : ''));
+	$xoopsTpl->assign("showwelcome", $moduleConfig['showwelcome']);
+	$xoopsTpl->assign("welcome", $GLOBALS['myts']->displayTarea($moduleConfig['welcome']));
 }
