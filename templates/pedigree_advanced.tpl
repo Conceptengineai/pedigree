@@ -1,3 +1,28 @@
+<script type="text/javascript"> 
+window.onload = function() { 
+	$("#piechart").CanvasJSChart({ 
+		axisY: { 
+			title: "Products in %" 
+		}, 
+		legend :{ 
+			verticalAlign: "center", 
+			horizontalAlign: "right" 
+		}, 
+		data: [ 
+		{ 
+			type: "pie", 
+			showInLegend: true, 
+			toolTipContent: "{label} <br/> {y} %", 
+			indexLabel: "{y} %", 
+			dataPoints: [ 
+				{ label: "Male",  y: <{$maledogs}>, legendText: "Male"}, 
+				{ label: "Female",    y: <{$femaledogs}>, legendText: "Female"  }
+			] 
+		} 
+		] 
+	}); 
+} 
+</script> 
 <table width="100%">
 	<tr>
 		<!-- first column -->
@@ -41,8 +66,9 @@
 					</td>
 				</tr>
 				<tr>
+					<!-- pie chart -->
 					<td class="odd" align="center">
-						<{$pienumber}>
+						<div id="piechart" style="width: 100%; height: 300px"></div>						
 					</td>
 				</tr>
 			</table>

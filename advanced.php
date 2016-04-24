@@ -15,7 +15,7 @@ xoops_loadLanguage('main', basename(dirname(__DIR__)));
 
 //needed for generation of pie charts
 ob_start();
-include(XOOPS_ROOT_PATH . "/modules/" . $xoopsModule->dirname() . "/include/class_eq_pie.php");
+//include(XOOPS_ROOT_PATH . "/modules/" . $xoopsModule->dirname() . "/include/class_eq_pie.php");
 require_once(XOOPS_ROOT_PATH . "/modules/" . $xoopsModule->dirname() . "/include/class_field.php");
 
 $xoopsOption['template_main'] = "pedigree_advanced.tpl";
@@ -23,6 +23,8 @@ $xoopsOption['template_main'] = "pedigree_advanced.tpl";
 include XOOPS_ROOT_PATH . '/header.php';
 // Include any common code for this module.
 require_once(XOOPS_ROOT_PATH . "/modules/" . $xoopsModule->dirname() . "/include/functions.php");
+$xoTheme->addScript(XOOPS_URL . '/browse.php?Frameworks/jquery/jquery.js');
+$xoTheme->addScript(PEDIGREE_URL . '/assets/js/jquery.canvasjs.min.js');
 
 global $xoopsTpl, $xoopsDB;
 $totpl = array();
@@ -52,69 +54,10 @@ list($countmales) = $xoopsDB->fetchRow($result);
 $result = $xoopsDB->query("select count(id) from " . $xoopsDB->prefix("pedigree_tree") . " where roft='1'");
 list($countfemales) = $xoopsDB->fetchRow($result);
 
-//create pie for number of males/females
-//construct new pie
-$numbers_pie = new eq_pie;
-$data[0][0]  = strtr(_MA_PEDIGREE_FLD_MALE, array('[male]' => $moduleConfig['male']));
-$data[0][1]  = $countmales;
-$data[0][2]  = "#C8C8FF";
+$totaldogs = $countmales + $countfemales;
+$perc_mdogs = round(100/$totaldogs*$countmales, 1);
+$perc_fdogs = round(100/$totaldogs*$countfemales, 1);
 
-$data[1][0] = strtr(_MA_PEDIGREE_FLD_FEMA, array('[female]' => $moduleConfig['female']));
-$data[1][1] = $countfemales;
-$data[1][2] = "#FFC8C8";
-
-$numbers_pie->MakePie('assets/images/numbers.png', '200', '200', '10', $odd, $data, '1');
-
-//create animal object
-
-$animal = new Animal();
-//test to find out how many user fields there are...
-$fields = $animal->numoffields();
-
-for ($i = 0; $i < count($fields); ++$i) {
-    $userfield   = new Field($fields[$i], $animal->getconfig());
-    $fieldType   = $userfield->getSetting("FieldType");
-    $fieldobject = new $fieldType($userfield, $animal);
-    if ($userfield->active() && $userfield->inadvanced()) {
-        $queryString
-                  = "select count(p.user" . $fields[$i] . ") as X, p.user" . $fields[$i] . " as p_user" . $fields[$i] . ", b.ID as b_id, b.value as b_value from " . $xoopsDB->prefix("pedigree_tree")
-            . " p LEFT JOIN " . $xoopsDB->prefix("pedigree_lookup" . $fields[$i]) . " b ON p.user" . $fields[$i] . " = b.ID GROUP BY p.user" . $fields[$i] . " ORDER BY X DESC";
-        $result   = $xoopsDB->query($queryString);
-        $piecount = 0;
-        unset($data);
-        unset($books);
-
-        while ($row = $xoopsDB->fetchArray($result)) {
-            $data[$piecount][0] = $row['b_value'];
-            $data[$piecount][1] = $row['X'];
-            $data[$piecount][2] = "#" . hexdec(rand(255, 1)) . hexdec(rand(255, 1)) . hexdec(rand(255, 1));
-            if ($row['p_user' . $fields[$i]] == "0") {
-                $whe = "zero";
-            } else {
-                $whe = $row['p_user' . $fields[$i]];
-            }
-            $books[] = array(
-                'book'    => "<a href=\"result.php?f=user" . $fields[$i] . "&w=" . $whe . "&o=NAAM\">" . $row['X'] . "</a>",
-                'country' => $row['b_value']
-            );
-            ++$piecount;
-        }
-        if ($userfield->inpie()) {
-            $pie = new eq_pie;
-            if ($piecount % 2 == 0) {
-                $back = $even;
-            } else {
-                $back = $odd;
-            }
-            if (isset($data)) {
-                $pie->MakePie('images/user' . $fields[$i] . '.png', '200', '200', '10', $back, $data, '1');
-                unset($pie);
-            }
-            $books[] = array('book' => "Chart", 'country' => '<img src="images/user' . $fields[$i] . '.png">');
-        }
-        $totpl[] = array('title' => $userfield->getSetting("FieldName"), 'content' => $books);
-    }
-}
 //strtr(_MA_PEDIGREE_FLD_MALE, array( '[male]' => $moduleConfig['male'] ))
 //strtr(_MA_PEDIGREE_ADV_ORPMUM, array( '[mother]' => $moduleConfig['mother'], '[animalTypes]' => $moduleConfig['animalTypes'] ))
 if ($moduleConfig['proversion'] == '1') {
@@ -152,5 +95,7 @@ $xoopsTpl->assign(
 );
 $xoopsTpl->assign("position", _MA_PEDIGREE_M50_POS);
 $xoopsTpl->assign("numdogs", _MA_PEDIGREE_M50_NUMD);
+$xoopsTpl->assign("maledogs", $perc_mdogs);
+$xoopsTpl->assign("femaledogs", $perc_fdogs);
 //comments and footer
 include XOOPS_ROOT_PATH . "/footer.php";
