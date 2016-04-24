@@ -56,7 +56,7 @@ class PedigreeTemp extends XoopsObject
      */
     function getForm($action = false)
     {
-        global $xoopsDB, $xoopsModuleConfig;
+        global $xoopsDB, $xoopsModuleConfig;	
 
         if ($action === false) {
             $action = $_SERVER["REQUEST_URI"];
@@ -77,9 +77,9 @@ class PedigreeTemp extends XoopsObject
         $form->addElement(new XoopsFormText(_AM_PEDIGREE_PEDIGREE_TEMP_MOTHER, "mother", 50, 255, $this->getVar("mother")), false);
         $form->addElement(new XoopsFormText(_AM_PEDIGREE_PEDIGREE_TEMP_FATHER, "father", 50, 255, $this->getVar("father")), false);
         $form->addElement(new XoopsFormText(_AM_PEDIGREE_PEDIGREE_TEMP_FOTO, "foto", 50, 255, $this->getVar("foto")), false);
-
+		
         include_once(XOOPS_ROOT_PATH . "/class/tree.php");
-        $Handler  = xoops_getModuleHandler('pedigree_temp', $xoopsModule->getVar("dirname"));
+        $Handler  = xoops_getmodulehandler('temp', PEDIGREE_DIRNAME);
         $criteria = new CriteriaCompo();
         $criteria->setSort('_id');
         $criteria->setOrder('ASC');
