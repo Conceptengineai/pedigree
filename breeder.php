@@ -144,6 +144,7 @@ $queryString
 $result = $xoopsDB->query($queryString);
 
 while ($row = $xoopsDB->fetchArray($result)) {
+	print_r();
     //check for access
     $access = "";
     if (!empty($xoopsUser)) {
@@ -160,7 +161,7 @@ while ($row = $xoopsDB->fetchArray($result)) {
     $dogs[] = array(
         'id'   => $row['ID'],
         'name' => $name,
-        'city' => ""
+        'city' => $row['city']
     );
 
 }
